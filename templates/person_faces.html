@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>{{ person.name }}'s Faces</h1>
+            <div class="btn-group">
+                <a href="{{ url_for('persons') }}" class="btn btn-secondary">Back to People</a>
+                <a href="{{ url_for('faces') }}" class="btn btn-info">All Faces</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% if unassigned_faces %}
+        <div class="col-12 mb-4">
+            <h3>Assign Faces</h3>
+            <div class="row">
+                {% for face in unassigned_faces %}
+                <div class="col-md-3 mb-4">
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='faces/' + face.filename) }}" 
+                             class="card-img-top" alt="Unassigned face">
+                        <div class="card-body">
+                            <form action="{{ url_for('assign_face', person_id=person.id, face_id=face.id) }}" method="POST">
+                                <button type="submit" class="btn btn-primary btn-sm">Assign to {{ person.name }}</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="col-12">
+            <h3>Assigned Faces</h3>
+            <div class="row">
+                {% if person.faces %}
+                    {% for face in person.faces %}
+                    <div class="col-md-3 mb-4">
+                        <div class="card">
+                            <img src="{{ url_for('static', filename='faces/' + face.filename) }}" 
+                                 class="card-img-top" alt="Assigned face">
+                            <div class="card-body">
+                                <p class="card-text">
+                                    From: {{ face.original_image }}<br>
+                                    Captured: {{ face.captured_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                                </p>
+                                <form action="{{ url_for('unassign_face', person_id=person.id, face_id=face.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-warning btn-sm">Unassign</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            No faces have been assigned to {{ person.name }} yet.
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

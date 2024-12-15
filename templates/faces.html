@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Captured Faces</h1>
+            <a href="/" class="btn btn-secondary">Back to Upload</a>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% if faces %}
+            {% for face in faces %}
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <img src="{{ url_for('static', filename='faces/' + face.filename) }}" 
+                         class="card-img-top" alt="Captured face">
+                    <div class="card-body">
+                        <p class="card-text">
+                            From: {{ face.original_image }}<br>
+                            Captured: {{ face.captured_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                        </p>
+                        {% if face.similar_faces %}
+                        <div class="mt-3">
+                            <h6 class="mb-2">Potential Matches:</h6>
+                            {% for similar in face.similar_faces %}
+                            <div class="d-flex align-items-center mb-2">
+                                <a href="{{ url_for('assign_face', person_id=similar.person_id, face_id=face.id) }}" 
+                                   class="btn btn-sm btn-outline-info d-flex align-items-center">
+                                    <i class="fas fa-user-plus me-1"></i>
+                                    {{ similar.person_name }}
+                                    <span class="badge bg-secondary ms-2">
+                                        {{ "%.0f"|format(similar.similarity * 100) }}%
+                                    </span>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary create-person" data-bs-toggle="modal" 
+                                    data-bs-target="#createPersonModal" data-face-id="{{ face.id }}">
+                                <i class="fas fa-user-plus"></i> Create Person
+                            </button>
+                            <div class="flip-card">
+                                <div class="flip-card-inner">
+                                    <div class="flip-card-front">
+                                        <button class="btn btn-danger delete-face" data-face-id="{{ face.id }}">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                    <div class="flip-card-back">
+                                        <button class="btn btn-danger confirm-delete" data-face-id="{{ face.id }}">
+                                            Confirm Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No faces have been captured yet. Upload some images to detect faces!
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Create Person Modal -->
+<div class="modal fade" id="createPersonModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Person</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="createPersonForm">
+                <input type="hidden" id="faceId" name="face_id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="personName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="personName" name="name" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create Person</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

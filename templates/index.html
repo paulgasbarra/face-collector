@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center mb-4">
+        <h1>Face Detection</h1>
+        <p class="lead">Upload an image to detect faces</p>
+    </div>
+</div>
+
+<div class="row justify-content-center mb-4">
+    <div class="col-md-6">
+        <div class="upload-container">
+            <form id="uploadForm" class="text-center">
+                <div class="mb-3">
+                    <label for="imageInput" class="form-label">Choose an image</label>
+                    <input type="file" class="form-control" id="imageInput" accept=".jpg,.jpeg,.png">
+                </div>
+                <div class="mb-3">
+                    <label for="algorithm" class="form-label">Select Detection Algorithm</label>
+                    <select class="form-select" id="algorithm">
+                        <option value="haar">Haar Cascade (Fast, Good for frontal faces)</option>
+                        <option value="dnn">Deep Neural Network (More accurate, Slower)</option>
+                        <option value="mtcnn">MTCNN (Best for varied angles and lighting)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" id="uploadButton">
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    Upload and Detect
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row image-container d-none">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Original Image</div>
+            <div class="card-body">
+                <img id="originalImage" class="img-fluid" alt="Original image">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Processed Image</div>
+            <div class="card-body">
+                <img id="processedImage" class="img-fluid" alt="Processed image">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-danger d-none" id="errorAlert" role="alert"></div>
+    </div>
+</div>
+{% endblock %}

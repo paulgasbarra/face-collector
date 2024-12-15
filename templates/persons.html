@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>People</h1>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPersonModal">
+                Add New Person
+            </button>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% if persons %}
+            {% for person in persons %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ person.name or "Unknown" }}</h5>
+                        <p class="card-text">
+                            Created: {{ person.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                        </p>
+                        <div class="faces-grid mb-3">
+                            {% if person.faces %}
+                                {% for face in person.faces[:4] %}
+                                    <div class="face-thumbnail">
+                                        <img src="{{ url_for('static', filename='faces/' + face.filename) }}" 
+                                             class="img-thumbnail" alt="Face of {{ person.name }}">
+                                    </div>
+                                {% endfor %}
+                                {% if person.faces|length > 4 %}
+                                    <div class="face-thumbnail more-faces">
+                                        +{{ person.faces|length - 4 }}
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-muted">No faces assigned</p>
+                            {% endif %}
+                        </div>
+                        <a href="{{ url_for('view_person', person_id=person.id) }}" class="btn btn-info">View All Faces</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No people have been added yet.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add Person Modal -->
+<div class="modal fade" id="addPersonModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Person</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('add_person') }}" method="POST" id="addPersonForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="personName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="personName" name="name" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Person</button>
+                </div>
+            </form>
+            <div class="alert alert-danger d-none" id="personFormError"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
